@@ -1,0 +1,102 @@
+CHANGE AUDIO
+sudo amixer cset numid=3 1
+0 auto, 1 headphone jack, 2 hdmi
+
+
+br -algorithm 'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+(Grid(10,10)+SIFTDescriptor(12)+ByRow)/(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))+PCA(0.65)+Normalize(L2)+Dup(12)+RndSubspace(0.05,1)+LDA(0.98)+Cat+PCA(0.95)+Normalize(L1)+Quantize:NegativeLogPlusOne(ByteL1)' -train ./training_set FaceRecognitionObama
+
+br -algorithm FaceRecognitionObama -enrollAll -enroll ./training_set 'obama.gal'
+
+br -algorithm FaceRecognitionObama -compare obama_3.jpg obama.gal match_scores.csv
+
+
+
+TRY AGAIN
+
+
+br -algorithm 'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+(Grid(10,10)+SIFTDescriptor(12)+ByRow)/(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))+PCA(0.95)+Normalize(L2)+Dup(12)+RndSubspace(0.05,1)+LDA(0.98)+Cat+PCA(0.95)+Normalize(L1)+Quantize:NegativeLogPlusOne(ByteL1)' -train ./img FaceRecognitionATT
+
+br -algorithm FaceRecognitionATT -enrollAll -enroll ./img/ 'ATT.gal'
+
+br -algorithm FaceRecognitionATT -compare ATT.gal match_me_to_10.jpg match_scores.csv
+
+
+
+REGULAR TRY on ATT
+
+br -algorithm FaceRecognition -enrollAll -enroll ./img 'att.gal'
+br -algorithm FaceRecognition -compare match_me_to_10.pgm att.gal match_scores.csv
+
+
+
+REGULAR TRY on INRIAPerson
+
+br -algorithm FaceRecognition -enrollAll -enroll /home/pi/openbr/data/INRIAPerson/img/Train/pos 'inria.gal'
+br -algorithm FaceRecognition -compare crop001058.png inria.gal match_scores.csv
+
+
+
+REGULAR TRY on Obama
+br -algorithm 'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+(Grid(10,10)+SIFTDescriptor(12)+ByRow)/(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))+PCA(0.95)+Normalize(L2)+Dup(12)+RndSubspace(0.05,1)+LDA(0.98)+Cat+PCA(0.95)+Normalize(L1)+Quantize:NegativeLogPlusOne(ByteL1)' -train ./training_set FaceRecognitionObama
+br -algorithm FaceRecognition -enrollAll -enroll ./training_set 'obama.gal'
+br -algorithm FaceRecognition -compare Nancy_Pelosi_0010.jpg obama.gal match_scores.csv
+
+
+INSTALLED v1.1.0
+THEN REGULAR TRY
+
+THIS WORKS!!!
+br -algorithm FaceRecognition -enrollAll -enroll ./ 'wu.gal'
+br -algorithm FaceRecognition -compare Wu_Yi_0001.jpg wu.gal match_scores.csv
+
+THIS WORKS!!!!
+br -algorithm FaceRecognition -compare family.jpg family.jpg
+
+
+
+----------------------------------------------------
+----------------------------------------------------
+----------------------------------------------------
+OPEN BR TEST SCRIPT
+----------------------------------------------------
+----------------------------------------------------
+----------------------------------------------------
+
+### 
+RUN THIS SCRIPT
+###
+
+#!/bin/bash
+
+rm -f ../share/openbr/models/features/FaceRecognitionRegistration
+rm -f ../share/openbr/models/features/FaceRecognitionExtraction
+rm -f ../share/openbr/models/features/FaceRecognitionEmbedding
+rm -f ../share/openbr/models/features/FaceRecognitionQuantization
+rm -f ../share/openbr/models/algorithms/FaceRecognition
+
+
+br -algorithm FaceRecognition -path "./img" -train "training.xml" FaceRecognition
+## ^ -path file path to images -train path to metadata
+
+export image2compare="filepath"
+
+br -algorithm FaceRecognition -path "./img" -train "training.xml" FaceRecognitionFriends
+br -algorithm FaceRecognition -enrollAll -enroll ./img 'friends.gal'
+br -algorithm FaceRecognition -compare Charlton_Heston_0001.jpg friends.gal match_scores.csv
+
+
+br -algorithm 'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+(Grid(10,10)+SIFTDescriptor(12)+ByRow)/(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))+PCA(0.95)+Normalize(L2)+Dup(12)+RndSubspace(0.05,1)+LDA(0.98)+Cat+PCA(0.95)+Normalize(L1)+Quantize:NegativeLogPlusOne(ByteL1)' -train training.xml FaceRecognitionFriends
+answered questions: https://groups.google.com/forum/#!searchin/openbr-dev/facerecognition$20train/openbr-dev/j2lWDyII1WE/NcMdm4O_CQAJ
+
+
+img/charlton/Charlton_Heston_0001.jpg,23.9268
+img/charlton/Charlton_Heston_0002.jpg,0.543027
+img/charlton/Charlton_Heston_0003.jpg,2.5015
+img/charlton/Charlton_Heston_0004.jpg,0.859361
+img/charlton/Charlton_Heston_0005.jpg,0.518521
+img/charlton/Charlton_Heston_0006.jpg,1.0255
+
+
+
+
+

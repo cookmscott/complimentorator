@@ -1,0 +1,10 @@
+1,:),smiling-emoticon-square-face.png
+2,<3,emoticon-in-love-face-with-heart-shaped-eyes-in-square-outline.png
+3,|-),emoticon-square-smiling-face-with-closed-eyes.png
+4,^.^,smiley-with-closed-eyes-rounded-square-face.png
+5,:P,smiley-with-tongue-in-a-square-shape.png
+6,<:-),smiling-emoticon-with-raised-eyebrows-and-closed-eyes.png
+7,<:D,smiling-happy-emoticon-face.png
+8,*-D,smiling-happy-emoticon-square-face-with-eyes-like-stars.png
+9,:D,happy-smiling-emoticon-face-with-open-mouth.png
+10,;P,winking-emoticon-with-tongue-out-of-mouth-and-square-face-shape.png
