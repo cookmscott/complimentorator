@@ -9,17 +9,37 @@ import pygame
 from pygame.locals import *
 import csv
 import sqlite3
+import time
 
+###############################################
+###                 FUNCTIONS 
+###############################################
+
+#picture display size
+width = 1920
+height = 1080
+windowSurfaceObj = pygame.display.set_mode((width,height),FULLSCREEN)
+pygame.display.set_caption('compli-buddy')
+
+# create function to display images
+def display_image(image_file_path):
+    image=pygame.image.load(image_file_path)
+    windowSurfaceObj.fill((0,0,0))
+    windowSurfaceObj.blit(image,(width/4,0))
+    pygame.display.update()
 
 ###############################################
 ### RUN FACIAL RECOGNITION ALGORITHM 
 ###############################################
 
+# show "smile" text
+display_image("/home/pi/Documents/complimentorator/camera.png")
+
 # capture image of viewer
 # subprocess.call('fswebcam --no-banner viewer.jpg', shell=True)
 
 # if need to re-enroll friend picture gallery: br -algorithm FaceRecognition -enrollAll -enroll ./compliment_pictures friends.gal
-# subprocess.call('br -algorithm FaceRecognition -compare viewer.jpg friends.gal match_scores.csv', shell=True)
+subprocess.call('br -algorithm FaceRecognition -compare viewer.jpg friends.gal match_scores.csv', shell=True)
 
 ###############################################
 ### INGEST SCORES, ANALYSE, AND ASSIGN VIEWER
@@ -65,9 +85,9 @@ for row in all_rows:
 viewer = all_rows[0][0]
 print viewer
 
-###############################################
-### SPEECH & VISUAL SYNTHESIS
-##############################################
+##################################################################
+###                 SPEECH & VISUAL SYNTHESIS                  ###
+##################################################################
 
 # create emoji map from file of emoticons :) and file paths to each image
 with open('./compliment_bank/emoji_map.txt', 'rb') as f:
@@ -85,15 +105,9 @@ def emoji_file_path(emoji_from_compliment):
         index=0
     return 'compliment_emojis/'+emoji_map[index][2]
 
-
-
-
-##
-## decide what compliment that friendly viewer is going to hear
-##
-with open('./compliment_bank/compliment_list.txt', 'rb') as f:
-    reader = csv.reader(f)
-    compliment_list = list(reader)
+##                                                              ##
+## Decide what compliment that friendly viewer is going to hear ##
+##                                                              ##
 
 # function to return position of randomly weighted selection
 def weighted_choice(weights):
@@ -109,6 +123,17 @@ def weighted_choice(weights):
         if rnd < total:
             return i
 
+# pick regular or name based compliment
+if random.random() > 0.08:
+    with open('./compliment_bank/compliment_list.txt', 'rb') as f:
+        reader = csv.reader(f)
+        compliment_list = list(reader)
+else:
+    with open('./compliment_by_name/%s.txt' % viewer, 'rb') as f:
+        reader = csv.reader(f)
+        compliment_list = list(reader)
+        
+# function to choose a compliment by weight, and break into components
 compliment=[]
 # get all weights and convert to int
 compliment_weights = [ int(s) for s in zip(*compliment_list)[0] ]
@@ -119,28 +144,25 @@ compliment = compliment_list[compliment_pos][1]
 # create individual compliment components
 compliment_components=compliment.split('/')
 
+#
+# Prepend the personalized Greeting
+#
+greeting=[]
+greeting.append("Hello %s!" % viewer)
+opening_smile=[]
+opening_smile.append('/:)/')
+compliment_components = opening_smile + greeting + compliment_components
+
 ##
 ## SPEAK & DISPLAY
 ##
 
-#picture display size
-width = 1920
-height = 1080
-windowSurfaceObj = pygame.display.set_mode((width,height),FULLSCREEN)
-pygame.display.set_caption('compli-buddy')
-
+# speak and display emojis
 for block in compliment_components:
-    print block
     print emoji_file_path(block)
     # if alphanumeric, speak!
     if re.match('^[A-Za-z\s]{1}',block) is not None:
         subprocess.call("pico2wave -w speak_now.wav '%s'" % block,shell=True)
-        # subprocess.call("omxplayer -o local speak_now.wav",shell=True)
         subprocess.call("aplay speak_now.wav",shell=True)
     else:
-        # -t scale -f fullscreen -c alpha
-        # subprocess.call("pqiv -t -f -c '%s'" % emoji_file_path(block),shell=True)
-        image=pygame.image.load(emoji_file_path(block))
-        windowSurfaceObj.fill((0,0,0))
-        windowSurfaceObj.blit(image,(width/1.7,0))
-        pygame.display.update()
+        display_image(emoji_file_path(block))

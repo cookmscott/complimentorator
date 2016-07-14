@@ -96,7 +96,9 @@ img/charlton/Charlton_Heston_0004.jpg,0.859361
 img/charlton/Charlton_Heston_0005.jpg,0.518521
 img/charlton/Charlton_Heston_0006.jpg,1.0255
 
+## standardize and resize images
+sudo apt-get install imagemagick
+for file in *.jpg; do convert "$file" -resize 300x300 "./resized/$file"; done
 
-
-
-
+## install text to speech
+sudo apt-get install libttspico-utils
