@@ -125,7 +125,7 @@ def weighted_choice(weights):
             return i
 
 # pick regular or name based compliment
-if random.random() > 0.1 and viewer_score > 1 and (viewer_score - viewer_score_second_place) > 1:
+if random.random() > 0.99 and viewer_score > 1 and (viewer_score - viewer_score_second_place) > 1:
     with open('./compliment_bank/compliment_list.txt', 'rb') as f:
         reader = csv.reader(f)
         compliment_list = list(reader)
