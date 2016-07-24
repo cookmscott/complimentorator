@@ -33,7 +33,7 @@ def display_image(image_file_path):
 ###############################################
 
 # show "smile" text
-display_image("/home/pi/Documents/complimentorator/camera.png")
+display_image("/home/pi/Documents/complimentorator/camera_white.png")
 
 # capture image of viewer
 # subprocess.call('fswebcam --no-banner viewer.jpg', shell=True)
@@ -83,7 +83,8 @@ for row in all_rows:
 
 # set highest avg score as viewer of complimentorator	
 viewer = all_rows[0][0]
-print viewer
+viewer_score = all_rows[0][1]
+viewer_score_second_place = all_rows[1][1]
 
 ##################################################################
 ###                 SPEECH & VISUAL SYNTHESIS                  ###
@@ -124,12 +125,14 @@ def weighted_choice(weights):
             return i
 
 # pick regular or name based compliment
-if random.random() > 0.08:
+if random.random() > 0.1 and viewer_score > 1 and (viewer_score - viewer_score_second_place) > 1:
     with open('./compliment_bank/compliment_list.txt', 'rb') as f:
         reader = csv.reader(f)
         compliment_list = list(reader)
 else:
     with open('./compliment_by_name/%s.txt' % viewer, 'rb') as f:
+        display_image("/home/pi/Documents/complimentorator/bonus.png")
+        subprocess.call("aplay -q air_horn.wav",shell=True)
         reader = csv.reader(f)
         compliment_list = list(reader)
         
@@ -159,10 +162,9 @@ compliment_components = opening_smile + greeting + compliment_components
 
 # speak and display emojis
 for block in compliment_components:
-    print emoji_file_path(block)
     # if alphanumeric, speak!
     if re.match('^[A-Za-z\s]{1}',block) is not None:
         subprocess.call("pico2wave -w speak_now.wav '%s'" % block,shell=True)
-        subprocess.call("aplay speak_now.wav",shell=True)
+        subprocess.call("aplay -q speak_now.wav",shell=True)
     else:
         display_image(emoji_file_path(block))
