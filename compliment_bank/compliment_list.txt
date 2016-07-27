@@ -60,3 +60,4 @@
 "1","I don''t judge books by their cover, but your cover is so interesting I''m sure you''re full of exciting surprises and adventures. /<:-)/ ."
 "3","You are an adventurer. Go explore the world. /*-D/ Lead others and set an example for them. /:)/ ."
 "2","Sometimes I feel like you forget, so let me remind you /<:-)/. You. Are. Awesome. /:D/."
+"2","You. Are. Awesome. You. Are. Amazing. /|-)/ Do not forget that, and have a wonderful day /<:-)/
